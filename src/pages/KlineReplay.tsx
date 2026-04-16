@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import KlineChart from '../components/KlineChart';
 import PlaybackControls from '../components/PlaybackControls';
 import TimeSlider from '../components/TimeSlider';
@@ -7,27 +7,41 @@ import DataManager from '../components/DataManager';
 import { useKlineReplayStore } from '../store';
 
 const KlineReplay: React.FC = () => {
-  const { playback, setCurrentIndex, klineData, settings } = useKlineReplayStore();
+  const { playback, setCurrentIndex, klineData, settings, setPlaybackState } = useKlineReplayStore();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // 回放逻辑
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
+    // 清除之前的定时器
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
     
     if (playback.isPlaying && klineData) {
-      interval = setInterval(() => {
-        setCurrentIndex(playback.currentIndex + 1);
+      intervalRef.current = setInterval(() => {
+        const nextIndex = playback.currentIndex + 1;
         
         // 到达数据末尾时停止回放
-        if (playback.currentIndex >= klineData.candles.length - 1) {
-          // 这里可以添加停止回放的逻辑
+        if (nextIndex >= klineData.candles.length) {
+          setPlaybackState({ isPlaying: false });
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
+        } else {
+          setCurrentIndex(nextIndex);
         }
       }, 1000 / settings.playbackSpeed);
     }
     
     return () => {
-      if (interval) clearInterval(interval);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     };
-  }, [playback.isPlaying, playback.currentIndex, klineData, settings.playbackSpeed, setCurrentIndex]);
+  }, [playback.isPlaying, playback.currentIndex, klineData, settings.playbackSpeed, setCurrentIndex, setPlaybackState]);
   
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 md:p-8">
