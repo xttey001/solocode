@@ -7,7 +7,8 @@
 ## 文件说明
 
 - [localFactorMining.ts](file:///workspace/scripts/localFactorMining.ts) - 核心因子挖掘脚本
-- [runFactorMining.ts](file:///workspace/scripts/runFactorMining.ts) - 命令行入口脚本
+- [runFactorMining.ts](file:///workspace/scripts/runFactorMining.ts) - 命令行入口脚本（TypeScript）
+- [run.js](file:///workspace/scripts/run.js) - 自动安装和运行脚本（推荐使用）
 - [config.example.json](file:///workspace/scripts/config.example.json) - 配置文件示例
 
 ## 功能特性
@@ -20,36 +21,59 @@
 
 ## 使用方法
 
-### 1. 基本使用
+### 方法 1：使用自动安装脚本（推荐）
 
 ```bash
 cd /workspace/scripts
-npx ts-node runFactorMining.ts
+node run.js
 ```
 
-### 2. 使用配置文件
+这个脚本会自动检查并安装所需的依赖（ts-node、typescript、@types/node），然后运行因子挖掘。
+
+### 方法 2：手动安装并运行
+
+如果您想手动安装依赖：
 
 ```bash
-npx ts-node runFactorMining.ts --config=config.example.json
+# 1. 全局安装依赖
+npm install -g ts-node typescript @types/node
+
+# 2. 进入脚本目录
+cd /workspace/scripts
+
+# 3. 运行脚本
+ts-node runFactorMining.ts
 ```
 
-### 3. 命令行参数
+### 使用配置文件
+
+```bash
+# 使用自动安装脚本
+node run.js --config=config.example.json
+
+# 或手动运行
+ts-node runFactorMining.ts --config=config.example.json
+```
+
+### 命令行参数
 
 ```bash
 # 指定时间间隔和迭代代数
-npx ts-node runFactorMining.ts --interval=1d --generations=300
+node run.js --interval=1d --generations=300
 
 # 指定股票列表
-npx ts-node runFactorMining.ts --symbols=000001,000002,000003
+node run.js --symbols=000001,000002,000003
 
 # 调整遗传算法参数
-npx ts-node runFactorMining.ts --population-size=150 --mutation-rate=0.2
+node run.js --population-size=150 --mutation-rate=0.2
 ```
 
-### 4. 查看帮助
+### 查看帮助
 
 ```bash
-npx ts-node runFactorMining.ts --help
+node run.js --help
+# 或
+ts-node runFactorMining.ts --help
 ```
 
 ## 配置说明
